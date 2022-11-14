@@ -14,12 +14,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   story.init(
     {
-      name: DataTypes.STRING,
-      allowNull: false,
+      name: { type: DataTypes.STRING, allowNull: false },
       content: DataTypes.TEXT,
       imageUrl: DataTypes.STRING,
-      spaceId: DataTypes.INTEGER,
-      allowNull: false,
+      spaceId: { type: DataTypes.INTEGER, allowNull: false },
     },
     {
       sequelize,
