@@ -12,4 +12,14 @@ router.get("/spaces", async (req, res, next) => {
   }
 });
 
+router.get("/spaces/:id", async (req, res, next) => {
+  try {
+    const spaceId = parseInt(req.params.id);
+    const thisSpace = await Space.findByPk(spaceId);
+    res.json(thisSpace);
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;
