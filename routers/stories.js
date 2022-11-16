@@ -34,4 +34,20 @@ router.post("/stories", async (req, res, next) => {
   }
 });
 
+router.delete("/stories/:id", async (req, res, next) => {
+  try {
+    const storyId = parseInt(req.params.id);
+    console.log("Backend story id", parseInt(storyId));
+    const storyToDelete = await Story.findByPk(storyId);
+    if (!storyToDelete) {
+      res.status(400).send("story not found");
+    } else {
+      await storyToDelete.destroy();
+      res.status(200).send("story deleted");
+    }
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;

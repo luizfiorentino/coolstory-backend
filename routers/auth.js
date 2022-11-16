@@ -4,6 +4,7 @@ const { toJWT } = require("../auth/jwt");
 const authMiddleware = require("../auth/middleware");
 const User = require("../models/").user;
 const Space = require("../models").space;
+const Story = require("../models").story;
 const { SALT_ROUNDS } = require("../config/constants");
 
 const router = new Router();
@@ -28,7 +29,24 @@ router.post("/login", async (req, res, next) => {
 
     delete user.dataValues["password"]; // don't send back the password hash
     const token = toJWT({ userId: user.id });
-    return res.status(200).send({ token, user: user.dataValues });
+
+    const userId = parseInt(user.id);
+
+    const userSpace = await Space.findOne({ where: { userId } });
+    const spaceId = userSpace.id;
+    const space = await Space.findByPk(spaceId, {
+      order: [[Story, "createdAt", "DESC"]],
+      include: [
+        {
+          model: Story,
+        },
+      ],
+    });
+
+    console.log("Backend", space);
+    return res
+      .status(200)
+      .send({ token, user: user.dataValues, userSpace: space });
   } catch (error) {
     console.log(error);
     return res.status(400).send({ message: "Something went wrong, sorry" });
@@ -78,7 +96,20 @@ router.post("/signup", async (req, res) => {
 router.get("/me", authMiddleware, async (req, res) => {
   // don't send back the password hash
   delete req.user.dataValues["password"];
-  res.status(200).send({ ...req.user.dataValues });
+  const userId = req.user.id;
+
+  const userSpace = await Space.findOne({ where: { userId } });
+  const spaceId = userSpace.id;
+  const space = await Space.findByPk(spaceId, {
+    order: [[Story, "createdAt", "DESC"]],
+    include: [
+      {
+        model: Story,
+      },
+    ],
+  });
+  res.status(200).send({ ...req.user.dataValues, space });
+  console.log("ME ROUTE space", space);
 });
 
 module.exports = router;
