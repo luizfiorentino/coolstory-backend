@@ -109,7 +109,6 @@ router.get("/me", authMiddleware, async (req, res) => {
     ],
   });
   res.status(200).send({ ...req.user.dataValues, space });
-  console.log("ME ROUTE space", space);
 });
 
 module.exports = router;
