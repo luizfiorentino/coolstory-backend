@@ -1,5 +1,5 @@
 const { Router } = require("express");
-
+const authMiddleware = require("../auth/middleware");
 const Space = require("../models").space;
 const Story = require("../models").story;
 const router = new Router();
@@ -13,7 +13,7 @@ router.get("/stories", async (req, res, next) => {
   }
 });
 
-router.post("/stories", async (req, res, next) => {
+router.post("/stories", authMiddleware, async (req, res, next) => {
   try {
     const { name, content, imageUrl, spaceId } = req.body;
     if (!name || !content || !imageUrl || !spaceId) {
