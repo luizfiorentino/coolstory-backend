@@ -72,8 +72,8 @@ router.post("/signup", async (req, res) => {
     const newSpace = await Space.create({
       title: `${name}'s Space`,
       description: null,
-      backgroundColor: "#3cdfff",
-      color: "#FF6700",
+      backgroundColor: "#ffffff",
+      color: "#000000",
       userId: newUser.id,
     });
     res
@@ -109,6 +109,22 @@ router.get("/me", authMiddleware, async (req, res) => {
     ],
   });
   res.status(200).send({ ...req.user.dataValues, space });
+});
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return "user not found";
+    }
+
+    const userToDelete = await user.destroy();
+    res.status(200).send("Account deleted");
+  } catch (e) {
+    next(e);
+  }
 });
 
 module.exports = router;

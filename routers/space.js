@@ -3,6 +3,7 @@ const { sequelize } = require("../models");
 const authMiddleware = require("../auth/middleware");
 const Space = require("../models").space;
 const Story = require("../models").story;
+const User = require("../models").user;
 const router = new Router();
 
 router.get("/spaces", async (req, res, next) => {
@@ -53,24 +54,20 @@ router.put("/spaces/:id", authMiddleware, async (req, res, next) => {
     next(e);
   }
 });
-// router.post("/spaces", async (req, res, next) => {
-//   // title: `<MyName>'s space`
-//   // - description: null
-//   // - backgroundColor: #ffffff (white)
-//   // - color: #000000 (black)
-//   try {
-//     const { title, description, backgroundColor, color, userId } = req.body;
-//     const newSpace = await Space.create({
-//       title,
-//       description,
-//       backgroundColor,
-//       color,
-//       userId,
-//     });
-//     res.json(newSpace);
-//   } catch (e) {
-//     next(e);
-//   }
-// });
+
+router.delete("/spaces/:id", async (req, res, next) => {
+  try {
+    const spaceId = parseInt(req.params.id);
+    const spaceToDelete = await Space.findByPk(spaceId);
+    if (!spaceToDelete) {
+      res.status(400).send("Space not found");
+    } else {
+      const spaceDeleted = spaceToDelete.destroy();
+      res.status(200).send("space deleted:");
+    }
+  } catch (e) {
+    next(e);
+  }
+});
 
 module.exports = router;
